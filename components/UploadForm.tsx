@@ -8,18 +8,27 @@ import { Textarea } from './ui/textarea'
 import { Loader, WandSparkles } from 'lucide-react'
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
 import { storage } from '@/config/firebase'
+import { useRouter } from 'next/navigation'
+import { v4 as uuidv4 } from "uuid";
+import useImageStore from '@/store/user'
+import { Select, SelectContent,  SelectItem,  SelectTrigger, SelectValue } from './ui/select'
 
 
 const UploadForm = () => {
 
+    const { addImage } = useImageStore();
+
     const [files, setFiles] = useState<File[] | null>([]);
     const [ info , setInfo] = useState<string>("");
     const [isLoading , setIsLoading] = useState(false);
+    const [aiModel , setModelName] = useState("geminipro");
+
+    const router = useRouter();
 
     const onConvert = async () => {
         setIsLoading(true);
         if(files){
-        const fileName = Date.now().toString();
+        const fileName = uuidv4();
         const imageRef = ref(storage , 'Wireframe/'+fileName);
       
             await uploadBytes(imageRef , files[0]).then((resp)=>{
@@ -27,7 +36,12 @@ const UploadForm = () => {
             })
 
             const imageUrl = await getDownloadURL(imageRef);
+            addImage(fileName, imageUrl, info ,aiModel);
+
+            router.push(`/code/${fileName}`)
             console.log(imageUrl);
+
+            
         } else{
             console.log("Select some file bro and dont see logs it for dev only");
         }
@@ -52,6 +66,21 @@ const UploadForm = () => {
             
 
         </div>
+        </div>
+        <div>
+            <Select defaultValue={aiModel} onValueChange={(value)=>setModelName(value)}>
+            <SelectTrigger className="w-[180px]">
+    <SelectValue placeholder="Ai Model" />
+  </SelectTrigger>
+  <SelectContent>
+    <SelectItem value="geminipro">Gemini 2 Pro</SelectItem>
+    <SelectItem value="geminiflash">Gemini 2 Flash</SelectItem>
+    <SelectItem value="deepr1">DeepSeek R1</SelectItem>
+    <SelectItem value="deepv3">DeepSeek V3</SelectItem>
+    <SelectItem value="meta">Meta Llama 3.3</SelectItem>
+    <SelectItem value="qwen">Qwen VL Plus</SelectItem>
+  </SelectContent>
+            </Select>
         </div>
         <div className=''>
 
