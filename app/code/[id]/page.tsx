@@ -70,7 +70,7 @@ const Page = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          prompt: newprompt + ":" + Constant.REGERATE_PROMPT + codeResp,
+          prompt: newprompt + ":" + Constant.PROMPT + codeResp,
           model: record?.aiModel,
         }),
       });
@@ -102,9 +102,9 @@ const Page = () => {
   
 
 
-  useEffect(()=>{
-    RegenerateCode(newPrompt);
-  } ,[regenrate]);
+  // useEffect(()=>{
+  //   RegenerateCode(newPrompt);
+  // } ,[regenrate]);
 
   const GenerateCode = async (resp: RECORD) => {
     try {
